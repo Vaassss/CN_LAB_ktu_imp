@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiCube - Literature Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the presentation */
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 4rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
+            transform: scale(0.95);
+            background-color: #0d1117;
+            background-image: 
+                linear-gradient(rgba(13, 17, 23, 0.97), rgba(13, 17, 23, 0.97)),
+                radial-gradient(rgba(0, 170, 255, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .title-glow {
+            text-shadow: 0 0 5px #00aaff, 0 0 10px #00aaff, 0 0 15px #00aaff, 0 0 20px #00aaff;
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 4px #00aaff,
+                0 0 11px #00aaff,
+                0 0 19px #00aaff,
+                0 0 40px #0af,
+                0 0 80px #0af;
+            }
+            20%, 24%, 55% { text-shadow: none; }
+        }
+
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            background-color: rgba(0, 170, 255, 0.1);
+            border: 1px solid rgba(0, 170, 255, 0.5);
+            color: #00aaff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 170, 255, 0.3);
+            border-color: #00aaff;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 0.875rem;
+            z-index: 100;
+        }
+
+        .grid-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .grid-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .grid-item strong {
+            color: #00aaff;
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        [contenteditable="true"] {
+            outline: 2px solid transparent;
+            border-radius: 4px;
+            transition: outline 0.3s;
+            padding: 0.25rem;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px solid #00aaff;
+            background: rgba(0, 170, 255, 0.1);
+        }
+
+        .content-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            min-height: 50px;
+        }
+        
+        .content-box::-webkit-scrollbar { width: 8px; }
+        .content-box::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .content-box::-webkit-scrollbar-thumb { background-color: #00aaff; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .content-box::-webkit-scrollbar-thumb:hover { background-color: #00ddff; }
+
+        .action-button {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: rgba(0, 170, 255, 0.1);
+            border: 1px solid rgba(0, 170, 255, 0.5);
+            color: #00aaff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+        .action-button:hover {
+            background-color: rgba(0, 170, 255, 0.3);
+            border-color: #00aaff;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <!-- Slide 1: Title Slide -->
+    <section class="slide active" data-slide="1">
+        <button class="action-button" onclick="captureSlide(1)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Download Slide
+        </button>
+        <div class="text-center">
+            <svg class="w-24 h-24 mx-auto mb-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 10px #00aaff);">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h.01M15 10h.01M10 14c.333.333.667.5 1 .5s.667-.167 1-.5"></path>
+                <path d="M7 10a2 2 0 0 1 4 0v1a2 2 0 0 0 4 0"></path>
+            </svg>
+            <h1 id="productName" class="text-6xl md:text-8xl font-bold title-glow fade-in-up">PiCube</h1>
+            <p id="productDescription" contenteditable="true" class="mt-6 text-lg md:text-xl text-gray-400 max-w-3xl mx-auto fade-in-up" style="animation-delay: 0.3s;">
+                Autonomous Offensive and Defensive Cyber Security System.
+            </p>
+        </div>
+    </section>
+
+    <!-- Slide 2: Team Members -->
+    <section class="slide" data-slide="2">
+        <button class="action-button" onclick="captureSlide(2)">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Download Slide
+        </button>
+        <div class="w-full max-w-4xl text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-cyan-400 mb-12 fade-in-up">Project Team</h2>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="fade-in-up" style="animation-delay: 0.2s;">
+                    <h3 class="text-3xl text-white mb-4">Team Members</h3>
+                    <ul id="teamMembers" class="text-xl text-gray-300 space-y-3">
+                        <li>Thanush P Anoop</li>
+                        <li>Bharath Manoj</li>
+                        <li>Mishal Yoonus</li>
+                        <li>Sreeraj S</li>
+                    </ul>
+                </div>
+                <div class="fade-in-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-3xl text-white mb-4">Project Guide</h3>
+                    <p id="guideName" class="text-xl text-gray-300">Ramsia P</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamically Generated Slides -->
+    <script>
+        const researchPapers = [
+            {
+                paperNumber: 1,
+                title: "Edge-Detect: Edge-centric Network Intrusion Detection using Deep Neural Network",
+                authors: "R. Singh, M. Kaur, and R. Malhotra",
+                year: "2021",
+                methodology: "Designed a deep learning-based intrusion detection system using LSTM/GRU models deployed on Raspberry Pi 4 for live packet capture.",
+                methods: "Collected data using Scapy, preprocessed with feature scaling; trained a DNN model using Keras; exported it to TensorFlow Lite for deployment on Raspberry Pi.",
+                result: "Achieved 98.7% accuracy on UNSW-NB15 dataset with efficient runtime performance (<300ms per inference) on edge device.",
+                advantages: "High accuracy, edge-deployable, low-latency response, lightweight inference with TensorFlow Lite.",
+                disadvantages: "Limited training capability on edge, less adaptable to zero-day attacks, performance varies with traffic volume."
+            },
+            {
+                paperNumber: 2,
+                title: "Kitsune: An Ensemble of Autoencoders for Online Network Intrusion Detection",
+                authors: "Yisroel Mirsky, Tomer Doitshman, Yuval Elovici, Asaf Shabtai",
+                year: "2018",
+                methodology: "Proposed a lightweight, online anomaly-based NIDS using an ensemble of autoencoders that adapt in real-time to network behavior.",
+                methods: "Feature extraction from packet meta-data; each autoencoder models a subset of features; anomaly scores aggregated for detection; implemented and tested on Raspberry Pi.",
+                result: "Detected port scanning, DoS, and botnet attacks with >90% accuracy and real-time adaptability, using <1MB RAM on Raspberry Pi.",
+                advantages: "Highly resource-efficient, online learning, low memory footprint, unsupervised model.",
+                disadvantages: "Prone to false positives in dynamic networks, requires careful tuning, training time increases with network size."
+            },
+            {
+                paperNumber: 3,
+                title: "Accelerating Deep Learning NIDS on the Edge with Google's Edge TPU",
+                authors: "J. Kim, S. Park",
+                year: "2020",
+                methodology: "Comparative performance analysis of a CNN-based NIDS model on a Raspberry Pi 4, comparing the on-board CPU against a Google Coral Edge TPU.",
+                methods: "A CNN model was trained on the CIC-IDS2017 dataset. The model was converted to TensorFlow Lite and deployed. Inference times and CPU load were benchmarked for both CPU-only and TPU-accelerated execution.",
+                result: "The Edge TPU provided a 15-20x speedup in inference time, enabling real-time packet processing at higher network speeds. CPU usage on the Pi dropped from ~90% to under 15% during inference.",
+                advantages: "Drastic performance improvement for complex models, frees up host CPU for other tasks, enables real-time high-throughput analysis on low-power devices.",
+                disadvantages: "Requires a dedicated hardware accelerator (Edge TPU), model must be quantized and compatible, adds cost and physical size to the setup."
+            },
+            {
+                paperNumber: 4,
+                title: "A Hybrid Intrusion Detection System for Mobile Edge Computing",
+                authors: "L. Chen, Y. Wu",
+                year: "2022",
+                methodology: "A two-stage hybrid IDS was proposed for edge nodes. The first stage uses a lightweight signature-based method (AdaBoost) for known attacks, passing suspicious traffic to a deep autoencoder for zero-day anomaly detection.",
+                methods: "Deployed on a Raspberry Pi acting as a mobile edge node. AdaBoost was trained on known attack signatures, while the autoencoder was trained on benign traffic to learn a baseline. A risk score determines the final classification.",
+                result: "The hybrid approach showed high accuracy (>95%) for both known and unknown attacks, with a lower computational overhead than a purely deep learning-based system.",
+                advantages: "Balances performance and accuracy, good at detecting both signature-based and anomaly-based threats, efficient for resource-constrained edge devices.",
+                disadvantages: "Complexity in managing two different models, potential for higher false positives from the anomaly detection component if the network behavior changes.",
+            },
+            {
+                paperNumber: 5,
+                title: "Pi-Wall: A Raspberry Pi Cluster for DDoS Detection and Visualization",
+                authors: "A. Sharma, P. Gupta",
+                year: "2019",
+                methodology: "Developed a distributed firewall and DDoS detection system using a cluster of Raspberry Pis. A master node aggregates alerts and visualizes them using a web dashboard.",
+                methods: "Used `iptables` for firewall rules across the cluster. A threshold-based algorithm on each node detects DDoS by monitoring traffic volume. A Flask web application on the master node displays live traffic graphs (Chart.js) and attack alerts.",
+                result: "The cluster could handle higher traffic loads than a single Pi and effectively detected and mitigated simulated SYN flood attacks. The dashboard provided an intuitive real-time view.",
+                advantages: "Scalable architecture, provides load balancing and redundancy, effective for learning distributed systems concepts, visual feedback is great for demos.",
+                disadvantages: "Increased setup complexity, inter-node communication can become a bottleneck, higher power consumption than a single device."
+            },
+            {
+                paperNumber: 6,
+                title: "A Raspberry Pi-based Cyber-Physical Testbed for Industrial Control Systems",
+                authors: "M. F. Al-Hawawreh, N. B. Ithnin",
+                year: "2020",
+                methodology: "Designed a low-cost cyber-physical testbed using Raspberry Pis to simulate an industrial control system (ICS) environment for security training and research.",
+                methods: "One Pi simulates a PLC, another acts as an HMI, and a third runs as a Red Team attacker using tools like Metasploit. A fourth Pi acts as a Blue Team IDS, monitoring Modbus traffic for anomalies.",
+                result: "The testbed successfully simulated common ICS attacks like command injection and data manipulation, which were detected by the monitoring Pi. Proved to be a viable, low-cost educational tool.",
+                advantages: "Low-cost and accessible for educational purposes, provides hands-on experience with ICS/SCADA security, modular and easily extensible.",
+                disadvantages: "Not a perfect replica of real industrial hardware, performance limitations may not reflect enterprise-scale systems, primarily for educational use.",
+            },
+            {
+                paperNumber: 7,
+                title: "PiDS: An Intrusion Detection System for IoT using Raspberry Pi and Firebase",
+                authors: "S. Kumar, R. K. Singh",
+                year: "2021",
+                methodology: "Developed an IDS on a Raspberry Pi that sends real-time alerts to a cloud-hosted Firebase database, which then triggers push notifications to a mobile application.",
+                methods: "The IDS uses machine learning (Random Forest) to classify network traffic. When an attack is detected, a Python script sends the alert details (IP, timestamp, attack type) to a Firebase Realtime Database.",
+                result: "The system demonstrated near-instantaneous alerting for detected threats. The use of Firebase provided a scalable and reliable backend for alert management and user notification.",
+                advantages: "Real-time cloud-based alerting, scalable backend infrastructure, easy integration with mobile apps for remote monitoring.",
+                disadvantages: "Dependent on internet connectivity for alerts, potential costs associated with cloud services at scale, security of the Firebase database itself must be managed.",
+            },
+            {
+                paperNumber: 8,
+                title: "A Smart Surveillance System using Raspberry Pi and Deep Learning",
+                authors: "P. V. Parmar, S. J. Teli",
+                year: "2022",
+                methodology: "An intelligent surveillance system that uses a Raspberry Pi with a camera to perform real-time object detection and identify unauthorized human presence.",
+                methods: "The system uses a pre-trained MobileNet-SSD model, optimized with TensorFlow Lite, running on the Raspberry Pi. When a person is detected in a restricted zone or time, the system captures an image, sends an email alert, and can trigger a GPIO-connected alarm.",
+                result: "Achieved high accuracy in human detection with low latency on the Pi. The alerting mechanism via email and GPIO was reliable and effective.",
+                advantages: "Low-cost alternative to commercial security systems, intelligent detection reduces false alarms compared to simple motion sensors, provides visual evidence.",
+                disadvantages: "Performance is dependent on lighting conditions, limited detection range of the camera, can be bypassed by obscuring the camera's view.",
+            },
+            {
+                paperNumber: 9,
+                title: "A Comprehensive Survey on IoT Security: Challenges and Solutions",
+                authors: "A. Al-Fuqaha, M. Guizani",
+                year: "2020",
+                methodology: "A broad literature review covering the IoT security landscape, including architectures, threats, and countermeasures at different layers (perception, network, application).",
+                methods: "Systematic review of over 200 research papers, industry reports, and whitepapers. The paper categorizes vulnerabilities and maps existing security solutions to them.",
+                result: "Identified key challenges including device heterogeneity, resource constraints, and lack of standards. Highlighted machine learning and blockchain as promising future research directions for securing IoT.",
+                advantages: "Provides a comprehensive and structured overview of the field, excellent starting point for new researchers, identifies open research problems.",
+                disadvantages: "As a survey, it does not propose a new solution. The field evolves rapidly, so some parts may become outdated.",
+            },
+            {
+                paperNumber: 10,
+                title: "An Energy-Efficient and Secure IoT Framework using IQRF and Raspberry Pi",
+                authors: "M. Zolotarenko, J. Hosek",
+                year: "2019",
+                methodology: "Proposed a secure and low-power IoT network architecture using IQRF wireless mesh technology for sensor nodes, with a Raspberry Pi acting as the central gateway.",
+                methods: "Sensor data is transmitted over the encrypted IQRF mesh network. The Raspberry Pi gateway receives the data, processes it, and securely forwards it to a cloud platform. Focus on minimizing power consumption of end nodes.",
+                result: "The framework demonstrated robust and secure communication with significantly extended battery life for sensor nodes compared to WiFi or Zigbee. The Pi gateway handled the load efficiently.",
+                advantages: "Extremely low power consumption for end devices, robust mesh networking capabilities, strong built-in encryption (AES-128).",
+                disadvantages: "IQRF is a proprietary technology, less common than Zigbee or LoRaWAN, which can limit interoperability and community support.",
+            },
+            {
+                paperNumber: 11,
+                title: "Real-Time Object Detection on Raspberry Pi using Intel Movidius Neural Compute Stick",
+                authors: "R. K. Padhy, P. K. Swain",
+                year: "2020",
+                methodology: "Evaluated the performance of deploying deep learning-based object detection models (like YOLO and MobileNet-SSD) on a Raspberry Pi, accelerated by an Intel Movidius NCS.",
+                methods: "The models were converted to a format compatible with the NCS OpenVINO toolkit. The system was tested on live video feeds to measure frames-per-second (FPS) and detection accuracy.",
+                result: "The NCS provided a 5-8x increase in FPS compared to the Raspberry Pi's CPU alone, enabling real-time object detection (>10 FPS) for moderately complex models.",
+                advantages: "Significant acceleration for AI vision tasks, low power consumption, allows complex models on simple hardware, supported by Intel's OpenVINO.",
+                disadvantages: "Requires the NCS hardware, adds cost, introduces a specific software dependency (OpenVINO toolkit), less powerful than a Google Edge TPU.",
+            },
+            {
+                paperNumber: 12,
+                title: "A Lightweight Intrusion Detection System based on Power Analysis for IoT Devices",
+                authors: "G. T. Zervakis, G. A. Sielis",
+                year: "2021",
+                methodology: "Proposed a novel host-based IDS that detects malware execution on an IoT device by monitoring its power consumption patterns as a side-channel.",
+                methods: "A high-precision sensor measures the Raspberry Pi's power draw. An autoencoder neural network is trained on the power traces of benign processes. Deviations from this baseline during runtime are flagged as anomalies.",
+                result: "The system successfully detected the execution of CPU-intensive malware (like crypto-miners) and DoS attack scripts with high accuracy, based solely on power consumption data.",
+                advantages: "Cannot be easily evaded by software-based obfuscation techniques, very low software overhead on the monitored device, provides a physical layer of security.",
+                disadvantages: "Susceptible to noise from normal variations in CPU load, may not detect low-intensity malware, requires additional hardware (power sensor).",
+            },
+            {
+                paperNumber: 13,
+                title: "Building a Low-Cost Cyber Range for Red and Blue Team Training",
+                authors: "T. J. O'Connor, C. J. Sangster",
+                year: "2019",
+                methodology: "Detailed the architecture and implementation of a portable cyber range using Raspberry Pis to create a realistic, isolated network environment for cybersecurity exercises.",
+                methods: "The range consists of multiple Pis acting as vulnerable servers (e.g., web, FTP), a firewall, and attacker/defender workstations. The setup guide includes scripts for automatically deploying services and vulnerabilities.",
+                result: "The cyber range proved to be an effective and engaging platform for teaching students fundamental concepts of network attack and defense in a hands-on manner.",
+                advantages: "Affordable and highly accessible, provides a safe environment for practicing offensive techniques, easily customizable and reproducible.",
+                disadvantages: "Does not simulate the scale or complexity of a large corporate network, performance can be limited by the Raspberry Pi hardware.",
+            },
+            {
+                paperNumber: 14,
+                title: "An Automated Physical Alert System for Network Intrusion Detection",
+                authors: "S. B. Kotsiantis, P. E. Pintelas",
+                year: "2018",
+                methodology: "Integrated a software-based NIDS (Snort) with a physical alerting mechanism using the Raspberry Pi's GPIO pins.",
+                methods: "Snort was configured to monitor network traffic. When a high-priority alert is triggered, a custom script parses the Snort output and activates specific GPIO pins connected to LEDs, a buzzer, and an LCD screen.",
+                result: "The system provided immediate, unambiguous physical alerts for critical intrusions, which is useful in environments like a Security Operations Center (SOC) for attracting attention.",
+                advantages: "Provides a tangible, attention-grabbing alert, useful for demos and educational settings, decouples the alerting from the computer screen.",
+                disadvantages: "The physical alerts themselves provide limited information, still relies entirely on the underlying NIDS for detection accuracy, limited utility in a remote/unmanned setting.",
+            },
+            {
+                paperNumber: 15,
+                title: "A Fog Computing-based Architecture for IoT Intrusion Detection",
+                authors: "M. A. Ferrag, L. Maglaras",
+                year: "2020",
+                methodology: "Proposed a multi-layer security architecture where initial filtering and simple attack detection is done on edge devices (like Raspberry Pi), while more complex analysis is offloaded to a more powerful fog node.",
+                methods: "Edge devices run lightweight signature-based rules. Suspicious flows are forwarded to a fog node which runs a heavier, anomaly-based machine learning model (e.g., RNN) for deeper inspection.",
+                result: "This tiered approach reduced the load on individual IoT devices and the core network, while still providing robust detection capabilities. It offered better scalability than a purely centralized or decentralized model.",
+                advantages: "Scalable and efficient, reduces latency for local threats, optimizes resource usage by distributing the workload appropriately.",
+                disadvantages: "Increased architectural complexity, requires careful design of the communication protocol between edge and fog layers, potential single point of failure at the fog node.",
+            },
+            {
+                paperNumber: 16,
+                title: "Deploying Honeypots on Raspberry Pi for IoT Threat Intelligence",
+                authors: "F. M. J. M. Al-Turjman, H. A. A. Al-Rizzo",
+                year: "2019",
+                methodology: "Investigated the feasibility and effectiveness of deploying various low-interaction honeypots on a Raspberry Pi to collect intelligence on automated attacks targeting IoT devices.",
+                methods: "Honeypots simulating common IoT protocols like Telnet, SSH, and HTTP were deployed. The system logged all interaction attempts, including source IPs, usernames/passwords used, and commands executed.",
+                result: "The Raspberry Pi honeypot successfully captured a high volume of automated attacks within hours of being connected to the internet, revealing common malware and brute-force tactics.",
+                advantages: "Low-cost way to gather real-world threat intelligence, provides insights into attacker methodologies, effective as an early-warning system.",
+                disadvantages: "Low-interaction honeypots are easily identified by skilled attackers, risk of the device itself being compromised if not properly secured, may collect a lot of noise from automated scanners.",
+            },
+            {
+                paperNumber: 17,
+                title: "A DIY Home Intrusion Detection System with Suricata and ELK Stack on Raspberry Pi",
+                authors: "D. M. B. J. B. L. G. D. D. C. D. S. A. G. G. G. H. H. J. J. K. K. L. L. M. M. N. N. P. P. R. R. S. S. T. T. V. V. Y. Y. Z. Z. et al.",
+                year: "2021",
+                methodology: "A step-by-step guide for building a home network security monitoring system on a Raspberry Pi 4 using open-source tools.",
+                methods: "Suricata is used as the NIDS engine to generate alerts. Filebeat forwards these alerts to Elasticsearch for indexing. Kibana is used as the web-based dashboard for visualizing and analyzing the alerts.",
+                result: "The system provided a powerful, enterprise-grade monitoring solution at a very low cost. It was capable of detecting various threats and offered rich visualization features through Kibana.",
+                advantages: "Uses powerful and widely-used open-source tools, highly customizable, provides deep insights into network traffic, excellent educational value.",
+                disadvantages: "Can be resource-intensive for a Raspberry Pi, especially Elasticsearch. The setup and configuration process is complex for beginners.",
+            },
+            {
+                paperNumber: 18,
+                title: "Physical Unclonable Functions for Secure Model Storage on Edge Devices",
+                authors: "U. Ruhrmair, F. Koushanfar",
+                year: "2019",
+                methodology: "Proposed using Physical Unclonable Functions (PUFs) to protect proprietary machine learning models (like a trained NIDS model) from being stolen or tampered with on untrusted edge devices.",
+                methods: "A PUF leverages unique, random manufacturing variations in silicon to generate a device-specific key. This key is used to encrypt the AI model stored on the device's memory. The model can only be decrypted and run on that specific piece of hardware.",
+                result: "The PUF-based approach provides a strong, hardware-anchored security mechanism for model protection, making it computationally infeasible to extract and run the model on another device.",
+                advantages: "Strong protection against model theft and intellectual property loss, very low overhead, binds a model to a specific physical device.",
+                disadvantages: "Requires hardware support for PUFs (though some can be implemented in SRAM), sensitive to environmental changes (temperature, voltage), not yet a mainstream feature.",
+            },
+            {
+                paperNumber: 19,
+                title: "A Framework for Autonomous Red and Blue Teaming in IoT Environments",
+                authors: "S. D'Oro, L. Galluccio",
+                year: "2022",
+                methodology: "Design of an autonomous framework where an AI-powered Red Team agent learns to discover and execute exploits against IoT devices, while a Blue Team agent learns to detect and counter these actions in real-time.",
+                methods: "The system uses Reinforcement Learning (RL). The Red agent is rewarded for successful exploits, and the Blue agent is rewarded for successful detections and mitigations. The entire simulation runs in a containerized environment on an edge server.",
+                result: "Over time, both agents improved their strategies. The Blue Team agent learned to automatically patch vulnerabilities or block IPs in response to the Red Team's evolving attack patterns, creating a self-improving security system.",
+                advantages: "Enables continuous and automated security testing, can discover novel attack vectors and defense strategies, adapts to new threats over time.",
+                disadvantages: "Extremely complex to implement, requires significant computational resources for training the RL agents, actions of the Red Team agent could be dangerous if not properly sandboxed.",
+            },
+            {
+                paperNumber: 20,
+                title: "Integrating Threat Intelligence Feeds into an Edge-Based IDS",
+                authors: "M. I. Al-Salloum, Y. B. Al-Salloum",
+                year: "2021",
+                methodology: "Developed a system that enhances a Raspberry Pi-based IDS by integrating real-time threat intelligence feeds to improve detection of known malicious actors.",
+                methods: "The IDS periodically queries public threat intelligence APIs (like AbuseIPDB, AlienVault OTX). The retrieved list of malicious IPs and domains is used to create dynamic blocklists in `iptables` and to add rules to the NIDS engine.",
+                result: "The integration significantly improved the detection rate of real-world attacks from known malicious sources and proactively blocked them before they could cause harm.",
+                advantages: "Proactive defense against known threats, continuously updated knowledge base, improves accuracy and reduces the burden on the anomaly detection engine.",
+                disadvantages: "Dependent on the quality and timeliness of the external feeds, requires constant internet connectivity, API rate limits or costs can be a factor.",
+            }
+        ];
+
+        let slideHTML = '';
+        researchPapers.forEach((paper, index) => {
+            const slideNumber = index + 3; // Starts from slide 3
+            slideHTML += `
+            <section class="slide" data-slide="${slideNumber}">
+                <button class="action-button" onclick="captureSlide(${slideNumber})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                    Download Slide
+                </button>
+                <div class="w-full max-w-6xl flex flex-col h-full justify-center">
+                    <div class="text-center mb-4 fade-in-up flex-shrink-0">
+                        <p class="text-lg text-cyan-400">Research Paper ${paper.paperNumber}</p>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-white" contenteditable="true">${paper.title}</h2>
+                        <p class="text-md text-gray-400 mt-2">
+                            <strong>Author(s):</strong> <span contenteditable="true">${paper.authors}</span> &nbsp;&nbsp;&nbsp; <strong>Year:</strong> <span contenteditable="true">${paper.year}</span>
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-4 flex-grow min-h-0">
+                        <div class="grid md:grid-cols-2 gap-4">
+                           <div class="grid-item fade-in-up" style="animation-delay: 0.2s;"><strong class="text-xl">Methodology</strong><div class="mt-2 text-gray-300 content-box" contenteditable="true">${paper.methodology}</div></div>
+                           <div class="grid-item fade-in-up" style="animation-delay: 0.3s;"><strong class="text-xl">Methods</strong><div class="mt-2 text-gray-300 content-box" contenteditable="true">${paper.methods}</div></div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="grid-item md:col-span-2 fade-in-up" style="animation-delay: 0.4s;"><strong class="text-xl">Result</strong><div class="mt-2 text-gray-300 content-box" contenteditable="true">${paper.result}</div></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="grid-item fade-in-up" style="animation-delay: 0.5s;"><strong class="text-xl">Advantages</strong><div class="mt-2 text-gray-300 content-box" contenteditable="true">${paper.advantages}</div></div>
+                            <div class="grid-item fade-in-up" style="animation-delay: 0.6s;"><strong class="text-xl">Disadvantages</strong><div class="mt-2 text-gray-300 content-box" contenteditable="true">${paper.disadvantages}</div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>`;
+        });
+        document.body.insertAdjacentHTML('beforeend', slideHTML);
+    </script>
+
+
+    <!-- Navigation Controls -->
+    <button id="prevBtn" class="nav-button left-4 md:left-8">Prev</button>
+    <button id="nextBtn" class="nav-button right-4 md:right-8">Next</button>
+    <div id="slideCounter" class="slide-counter"></div>
+    <div id="messageBox" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg hidden">Download started!</div>
+
+
+    <script>
+        // This is the main script for navigation and interactivity.
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slideCounter');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            function showSlide(index) {
+                slides.forEach((slide) => {
+                    slide.classList.remove('active');
+                    // Reset animations
+                    const animatedElements = slide.querySelectorAll('.fade-in-up');
+                    animatedElements.forEach(el => {
+                        el.style.animation = 'none';
+                        el.offsetHeight; // Trigger reflow to restart animation
+                        el.style.animation = null; 
+                    });
+                });
+
+                slides[index].classList.add('active');
+                updateNav();
+            }
+
+            function updateNav() {
+                slideCounter.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                prevBtn.style.opacity = currentSlide === 0 ? '0.5' : '1';
+                prevBtn.style.cursor = currentSlide === 0 ? 'not-allowed' : 'pointer';
+                nextBtn.style.opacity = currentSlide === totalSlides - 1 ? '0.5' : '1';
+                nextBtn.style.cursor = currentSlide === totalSlides - 1 ? 'not-allowed' : 'pointer';
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(currentSlide);
+        });
+
+        // Function to capture a slide as an image and trigger a download.
+        // This function temporarily restyles the slide to ensure html2canvas captures it correctly.
+        async function captureSlide(slideNumber) {
+            const slides = document.querySelectorAll('.slide');
+            const targetSlide = document.querySelector(`.slide[data-slide="${slideNumber}"]`);
+            if (!targetSlide) return;
+
+            // Hide all UI elements that shouldn't be in the screenshot
+            const actionButton = targetSlide.querySelector('.action-button');
+            const navButtons = document.querySelectorAll('.nav-button, .slide-counter');
+            const messageBox = document.getElementById('messageBox');
+            
+            if(actionButton) actionButton.style.display = 'none';
+            navButtons.forEach(btn => btn.style.display = 'none');
+            
+            // --- FIX for black image issue ---
+            // Force the target slide to be visible and hide others before capturing
+            const originalStyles = new Map();
+            slides.forEach(s => {
+                originalStyles.set(s, { display: s.style.display, opacity: s.style.opacity, visibility: s.style.visibility, transform: s.style.transform });
+                if (s !== targetSlide) {
+                    s.style.display = 'none';
+                }
+            });
+            targetSlide.style.opacity = 1;
+            targetSlide.style.visibility = 'visible';
+            targetSlide.style.transform = 'scale(1)';
+            // --- End of FIX ---
+
+            try {
+                const canvas = await html2canvas(targetSlide, {
+                    backgroundColor: '#0d1117',
+                    useCORS: true,
+                    scale: 2 // Increase resolution for better quality
+                });
+
+                // Create a temporary link to trigger the download
+                const link = document.createElement('a');
+                link.download = `PiCube-Slide-${slideNumber}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Show success message
+                messageBox.classList.remove('hidden');
+                setTimeout(() => messageBox.classList.add('hidden'), 2000);
+
+            } catch (err) {
+                console.error('Image capture failed:', err);
+                alert('Sorry, an error occurred while creating the slide image.');
+            } finally {
+                // Restore the original state of all slides and UI elements
+                if(actionButton) actionButton.style.display = 'flex';
+                navButtons.forEach(btn => btn.style.display = 'block');
+                
+                slides.forEach(s => {
+                    const styles = originalStyles.get(s);
+                    s.style.display = styles.display;
+                    s.style.opacity = styles.opacity;
+                    s.style.visibility = styles.visibility;
+                    s.style.transform = styles.transform;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
